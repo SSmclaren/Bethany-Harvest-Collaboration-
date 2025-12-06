@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat</title>
+    <style>
+        body { font-family: Arial; max-width: 700px; margin: 50px auto; padding: 20px; }
+        .notice-info { background: #f0f0f0; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .chat-container { border: 1px solid #ddd; padding: 15px; min-height: 300px; max-height: 400px; overflow-y: auto; margin-bottom: 15px; background: white; border-radius: 5px; }
+        .message { margin: 10px 0; padding: 10px; border-radius: 5px; max-width: 70%; }
+        .message.anonymous { background: #e3f2fd; margin-right: auto; }
+        .message.owner { background: #c8e6c9; margin-left: auto; text-align: right; }
+        .sender { font-weight: bold; font-size: 12px; margin-bottom: 5px; }
+        .timestamp { font-size: 11px; color: #666; margin-top: 5px; }
+        textarea { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 3px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; margin: 5px; border-radius: 3px; }
+        button:hover { background: #0056b3; }
+        .back-btn { background: #6c757d; }
+        .back-btn:hover { background: #5a6268; }
+        .anonymous-notice { background: #fff3cd; padding: 10px; border-radius: 5px; margin-bottom: 15px; border: 1px solid #ffc107; }
+        a { text-decoration: none; }
+    </style>
+</head>
+<body>
+    <a href="/"><button class="back-btn">← Back to Notices</button></a>
+
+    <div class="notice-info">
+        <h2>{{ notice.book_name }}</h2>
+        <p>{{ notice.description }}</p>
+        <p><strong>Owner:</strong> {{ notice.owner }}</p>
+    </div>
+
+    {% if not is_owner %}
+        <div class="anonymous-notice">
+            🔒 You are chatting as: <strong>Anonymous User #{{ anon_id }}</strong>
+            <br><small>Your identity is protected. The book owner can reply to you but cannot see who you are.</small>
+        </div>
+    {% endif %}
+
+    <h3>Conversation</h3>
+    <div class="chat-container">
+        {% if messages %}
+            {% for msg in messages %}
+                <div class="message {{ msg.sender }}">
+                    <div class="sender">
+                        {% if msg.sender == 'owner' %}
+                            {{ notice.owner }} (Owner)
+                        {% else %}
+                            Anonymous User #{{ anon_id }}
+                        {% endif %}
+                    </div>
+                    <div>{{ msg.text }}</div>
+                    <div class="timestamp">{{ msg.timestamp[:16] }}</div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p style="text-align: center; color: #999; margin-top: 100px;">No messages yet. Start the conversation!</p>
+        {% endif %}
+    </div>
+
+    <form method="POST" action="/send_dm/{{ notice_id }}">
+        <textarea name="message" rows="3" placeholder="Type your message..." required></textarea>
+        <button type="submit">Send Message</button>
+    </form>
+</body>
+</html>

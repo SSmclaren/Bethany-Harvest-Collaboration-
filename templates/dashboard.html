@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Dashboard</title>
+    <style>
+        body { font-family: Arial; max-width: 800px; margin: 50px auto; padding: 20px; }
+        .notice { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; background: #f9f9f9; }
+        input, textarea { width: 100%; padding: 8px; margin: 5px 0; box-sizing: border-box; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; margin: 5px; border-radius: 3px; }
+        button:hover { background: #0056b3; }
+        .delete { background: #dc3545; }
+        .delete:hover { background: #c82333; }
+        .view-convos { background: #28a745; }
+        .view-convos:hover { background: #218838; }
+        .flash { padding: 10px; background: #d4edda; border: 1px solid #c3e6cb; margin: 10px 0; border-radius: 3px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .badge { background: #ff6b6b; color: white; padding: 3px 8px; border-radius: 10px; font-size: 12px; }
+        a { text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>My Dashboard</h1>
+        <div>
+            <a href="/"><button>View All Notices</button></a>
+            <a href="/logout"><button>Logout</button></a>
+        </div>
+    </div>
+
+    <p>Welcome, <strong>{{ session.username }}</strong>!</p>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="flash">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <h2>Post a New Notice</h2>
+    <form method="POST" action="/post_notice">
+        <input type="text" name="book_name" placeholder="Book Name (e.g., Math Textbook Grade 10)" required>
+        <textarea name="description" rows="3" placeholder="Description (e.g., Blue cover, has my name on page 5)"></textarea>
+        <button type="submit">Post Notice</button>
+    </form>
+
+    <h2>My Posted Notices</h2>
+    {% if notices %}
+        {% for id, notice in notices.items() %}
+            <div class="notice">
+                <h3>{{ notice.book_name }}</h3>
+                <p>{{ notice.description }}</p>
+                <small>Posted: {{ notice.timestamp[:10] }}</small>
+                
+                {% if conversations.get(id) %}
+                    <p><span class="badge">{{ conversations[id]|length }} conversation(s)</span></p>
+                {% endif %}
+                
+                <a href="/conversations/{{ id }}"><button class="view-convos">View Messages</button></a>
+                <a href="/delete_notice/{{ id }}"><button class="delete">Delete Notice</button></a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>You haven't posted any notices yet.</p>
+    {% endif %}
+</body>
+</html>

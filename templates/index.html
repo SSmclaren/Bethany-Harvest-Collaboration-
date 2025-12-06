@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lost Book Notices</title>
+    <style>
+        body { font-family: Arial; max-width: 800px; margin: 50px auto; padding: 20px; }
+        .notice { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; background: #f9f9f9; }
+        .notice h3 { margin-top: 0; color: #333; }
+        .owner { color: #007bff; font-weight: bold; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; border-radius: 3px; }
+        button:hover { background: #0056b3; }
+        .flash { padding: 10px; background: #d4edda; border: 1px solid #c3e6cb; margin: 10px 0; border-radius: 3px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .contact-btn { background: #28a745; }
+        .contact-btn:hover { background: #218838; }
+        a { text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📚 Lost Book Notices</h1>
+        <div>
+            {% if session.username %}
+                <a href="/dashboard"><button>My Dashboard</button></a>
+                <a href="/logout"><button>Logout</button></a>
+            {% else %}
+                <a href="/login"><button>Login</button></a>
+                <a href="/register"><button>Register</button></a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="flash">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <p><em>If you accidentally took someone's book, contact them anonymously below!</em></p>
+
+    {% if notices %}
+        {% for id, notice in notices %}
+            <div class="notice">
+                <h3>{{ notice.book_name }}</h3>
+                <p>{{ notice.description }}</p>
+                <p><strong>Owner:</strong> <span class="owner">{{ notice.owner }}</span></p>
+                <small>Posted: {{ notice.timestamp[:10] }}</small>
+                <br><br>
+                <a href="/chat/{{ id }}"><button class="contact-btn">Contact Owner Anonymously</button></a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No lost books reported yet.</p>
+    {% endif %}
+</body>
+</html>

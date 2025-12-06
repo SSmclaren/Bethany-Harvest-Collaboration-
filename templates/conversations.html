@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Conversations</title>
+    <style>
+        body { font-family: Arial; max-width: 800px; margin: 50px auto; padding: 20px; }
+        .notice-info { background: #f0f0f0; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .conversation { border: 1px solid #ddd; padding: 15px; margin: 15px 0; border-radius: 5px; background: #f9f9f9; }
+        .conversation h3 { margin-top: 0; color: #007bff; }
+        .message { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .message.anonymous { background: #e3f2fd; }
+        .message.owner { background: #c8e6c9; }
+        .sender { font-weight: bold; font-size: 12px; margin-bottom: 5px; }
+        .timestamp { font-size: 11px; color: #666; margin-top: 5px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; margin: 5px; border-radius: 3px; }
+        button:hover { background: #0056b3; }
+        .back-btn { background: #6c757d; }
+        .back-btn:hover { background: #5a6268; }
+        .reply-btn { background: #28a745; }
+        .reply-btn:hover { background: #218838; }
+        a { text-decoration: none; }
+    </style>
+</head>
+<body>
+    <a href="/dashboard"><button class="back-btn">← Back to Dashboard</button></a>
+
+    <div class="notice-info">
+        <h2>{{ notice.book_name }}</h2>
+        <p>{{ notice.description }}</p>
+    </div>
+
+    <h2>All Conversations ({{ conversations|length }})</h2>
+
+    {% if conversations %}
+        {% for anon_id, messages in conversations.items() %}
+            <div class="conversation">
+                <h3>🔒 Anonymous User #{{ anon_id }}</h3>
+                
+                {% for msg in messages %}
+                    <div class="message {{ msg.sender }}">
+                        <div class="sender">
+                            {% if msg.sender == 'owner' %}
+                                You (Owner)
+                            {% else %}
+                                Anonymous User #{{ anon_id }}
+                            {% endif %}
+                        </div>
+                        <div>{{ msg.text }}</div>
+                        <div class="timestamp">{{ msg.timestamp[:16] }}</div>
+                    </div>
+                {% endfor %}
+                
+                <a href="/chat/{{ notice_id }}?anon={{ anon_id }}"><button class="reply-btn">Reply to this conversation</button></a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No conversations yet.</p>
+    {% endif %}
+</body>
+</html>
