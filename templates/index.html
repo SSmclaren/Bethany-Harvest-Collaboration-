@@ -3,7 +3,8 @@
 <head>
     <title>Lost Book Notices</title>
     <style>
-        body { font-family: Arial; max-width: 800px; margin: 50px auto; padding: 20px; }
+        title{color:rosybrown;}
+        body { font-family: Arial; max-width: 800px; margin: 50px auto; padding: 20px;background-image: url(https://i.pinimg.com/736x/bd/05/f8/bd05f85b724b258927de97fa106168a0.jpg); }
         .notice { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; background: #f9f9f9; }
         .notice h3 { margin-top: 0; color: #333; }
         .owner { color: #007bff; font-weight: bold; }
@@ -14,18 +15,20 @@
         .contact-btn { background: #28a745; }
         .contact-btn:hover { background: #218838; }
         a { text-decoration: none; }
+        #def button{background-color:firebrick;}
+        #gg button{background-color: antiquewhite;}
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>📚 Lost Book Notices</h1>
+        <h1>Lost Book Notices</h1>
         <div>
             {% if session.username %}
                 <a href="/dashboard"><button>My Dashboard</button></a>
                 <a href="/logout"><button>Logout</button></a>
             {% else %}
-                <a href="/login"><button>Login</button></a>
-                <a href="/register"><button>Register</button></a>
+                <a id="def" href="/login"><button>Login</button></a>
+                <a id="gg" href="/register"><button>Register</button></a>
             {% endif %}
         </div>
     </div>

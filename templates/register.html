@@ -3,15 +3,19 @@
 <head>
     <title>Register</title>
     <style>
-        body { font-family: Arial; max-width: 400px; margin: 100px auto; padding: 20px; }
+        body { font-family: Arial; max-width: 400px; margin: 100px auto; padding: 20px;background-image: url(https://i.pinimg.com/736x/c7/e0/be/c7e0bed6ec93b50b2333132a2332cc76.jpg);background-size: cover;background-position: center; }
         input { width: 100%; padding: 10px; margin: 10px 0; }
-        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
-        button:hover { background: #0056b3; }
+        button { width: 100%; padding: 10px; background-image: linear-gradient(to right,#F88379,#9F2B68 ); color: white; border: none; cursor: pointer; }
+        button:hover { background: #bc3a0b; }
         .flash { padding: 10px; background: #f8d7da; border: 1px solid #f5c6cb; margin: 10px 0; }
+        #s{color:#0dfb15}
+        #bh{color:cornflowerblue;}
+        h1{color:rgb(57, 28, 224);}
+        #gd{color:rgb(197, 18, 18);}
     </style>
 </head>
 <body>
-    <h2>Register</h2>
+    <h1>Register</h1>
     
     {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -27,7 +31,7 @@
         <button type="submit">Register</button>
     </form>
     
-    <p>Already have an account? <a href="/login">Login here</a></p>
-    <p><a href="/">Back to notices</a></p>
+    <p id="gd">Already have an account? <a id="bh" href="/login">Login here</a></p>
+    <p><a id="s"href="/">Back to notices</a></p>
 </body>
 </html>

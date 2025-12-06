@@ -7,21 +7,21 @@ import secrets
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
 
-# File paths
-USERS_FILE = 'users.json'
-NOTICES_FILE = 'notices.json'
-CONVERSATIONS_FILE = 'conversations.json'
 
-# Initialize files if they don't exist
-def init_files():
-    for file in [USERS_FILE, NOTICES_FILE, CONVERSATIONS_FILE]:
-        if not os.path.exists(file):
-            with open(file, 'w') as f:
-                json.dump({}, f)
 
-init_files()
 
-# Helper functions
+
+
+
+
+for file in ['users.json', 'notices.json', 'conversations.json']:
+    if not os.path.exists(file):
+        with open(file, 'w') as f:
+            json.dump({}, f)
+
+
+
+
 def load_json(filename):
     with open(filename, 'r') as f:
         return json.load(f)
@@ -31,7 +31,7 @@ def save_json(filename, data):
         json.dump(data, f, indent=2)
 
 def get_or_create_anon_id(notice_id):
-    # Create a persistent anonymous ID for this browser session and notice
+    
     session_key = f'anon_id_{notice_id}'
     if session_key not in session:
         session[session_key] = secrets.token_hex(4).upper()
@@ -39,8 +39,8 @@ def get_or_create_anon_id(notice_id):
 
 @app.route('/')
 def index():
-    notices = load_json(NOTICES_FILE)
-    # Sort by timestamp, newest first
+    notices = load_json('notices.json')
+    
     sorted_notices = sorted(notices.items(), key=lambda x: x[1]['timestamp'], reverse=True)
     return render_template('index.html', notices=sorted_notices)
 
@@ -50,14 +50,14 @@ def register():
         username = request.form['username'].strip()
         password = request.form['password']
         
-        users = load_json(USERS_FILE)
+        users = load_json('users.json')
         
         if username in users:
             flash('Username already exists')
             return redirect('/register')
         
         users[username] = password
-        save_json(USERS_FILE, users)
+        save_json('users.json', users)
         flash('Registration successful! Please login.')
         return redirect('/login')
     
@@ -69,7 +69,7 @@ def login():
         username = request.form['username'].strip()
         password = request.form['password']
         
-        users = load_json(USERS_FILE)
+        users = load_json('users.json')
         
         if username in users and users[username] == password:
             session['username'] = username
@@ -89,12 +89,12 @@ def dashboard():
     if 'username' not in session:
         return redirect('/login')
     
-    notices = load_json(NOTICES_FILE)
-    conversations = load_json(CONVERSATIONS_FILE)
+    notices = load_json('notices.json')
+    conversations = load_json('conversations.json')
     
     user_notices = {k: v for k, v in notices.items() if v['owner'] == session['username']}
     
-    # Get conversations for user's notices
+   
     user_conversations = {}
     for notice_id in user_notices.keys():
         if notice_id in conversations:
@@ -114,7 +114,7 @@ def post_notice():
         flash('Book name is required')
         return redirect('/dashboard')
     
-    notices = load_json(NOTICES_FILE)
+    notices = load_json('notices.json')
     notice_id = secrets.token_hex(8)
     
     notices[notice_id] = {
@@ -124,7 +124,7 @@ def post_notice():
         'timestamp': datetime.now().isoformat()
     }
     
-    save_json(NOTICES_FILE, notices)
+    save_json('notices.json', notices)
     flash('Notice posted successfully!')
     return redirect('/dashboard')
 
@@ -133,16 +133,16 @@ def delete_notice(notice_id):
     if 'username' not in session:
         return redirect('/login')
     
-    notices = load_json(NOTICES_FILE)
-    conversations = load_json(CONVERSATIONS_FILE)
+    notices = load_json('notices.json')
+    conversations = load_json('conversations.json')
     
     if notice_id in notices and notices[notice_id]['owner'] == session['username']:
         del notices[notice_id]
-        save_json(NOTICES_FILE, notices)
+        save_json('notices.json', notices)
         
         if notice_id in conversations:
             del conversations[notice_id]
-            save_json(CONVERSATIONS_FILE, conversations)
+            save_json('conversations.json', conversations)
         
         flash('Notice deleted successfully!')
     
@@ -150,24 +150,24 @@ def delete_notice(notice_id):
 
 @app.route('/chat/<notice_id>')
 def chat_view(notice_id):
-    notices = load_json(NOTICES_FILE)
+    notices = load_json('notices.json')
     
     if notice_id not in notices:
         flash('Notice not found')
         return redirect('/')
     
     notice = notices[notice_id]
-    conversations = load_json(CONVERSATIONS_FILE)
+    conversations = load_json('conversations.json')
     
-    # Get or create anonymous ID for this user and notice
+    
     anon_id = get_or_create_anon_id(notice_id)
     
-    # Get messages for this conversation
+   
     messages = []
     if notice_id in conversations and anon_id in conversations[notice_id]:
         messages = conversations[notice_id][anon_id]
     
-    # Check if viewing as owner
+    
     is_owner = 'username' in session and session['username'] == notice['owner']
     
     return render_template('chat.html', notice=notice, notice_id=notice_id, 
@@ -181,25 +181,25 @@ def send_dm(notice_id):
         flash('Message cannot be empty')
         return redirect(f'/chat/{notice_id}')
     
-    notices = load_json(NOTICES_FILE)
+    notices = load_json('notices.json')
     
     if notice_id not in notices:
         flash('Notice not found')
         return redirect('/')
     
-    conversations = load_json(CONVERSATIONS_FILE)
+    conversations = load_json('conversations.json')
     
-    # Get or create anonymous ID
+    
     anon_id = get_or_create_anon_id(notice_id)
     
-    # Initialize conversation structure if needed
+   
     if notice_id not in conversations:
         conversations[notice_id] = {}
     
     if anon_id not in conversations[notice_id]:
         conversations[notice_id][anon_id] = []
     
-    # Determine sender
+    
     is_owner = 'username' in session and session['username'] == notices[notice_id]['owner']
     sender = 'owner' if is_owner else 'anonymous'
     
@@ -209,7 +209,7 @@ def send_dm(notice_id):
         'timestamp': datetime.now().isoformat()
     })
     
-    save_json(CONVERSATIONS_FILE, conversations)
+    save_json('conversations.json', conversations)
     return redirect(f'/chat/{notice_id}')
 
 @app.route('/conversations/<notice_id>')
@@ -217,16 +217,16 @@ def view_conversations(notice_id):
     if 'username' not in session:
         return redirect('/login')
     
-    notices = load_json(NOTICES_FILE)
+    notices = load_json('notices.json')
     
     if notice_id not in notices or notices[notice_id]['owner'] != session['username']:
         flash('Access denied')
         return redirect('/dashboard')
     
-    conversations = load_json(CONVERSATIONS_FILE)
+    conversations = load_json('conversations.json')
     notice = notices[notice_id]
     
-    # Get all conversations for this notice
+    
     convos = conversations.get(notice_id, {})
     
     return render_template('conversations.html', notice=notice, notice_id=notice_id, conversations=convos)

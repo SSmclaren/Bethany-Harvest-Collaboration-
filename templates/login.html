@@ -3,10 +3,14 @@
 <head>
     <title>Login</title>
     <style>
-        body { font-family: Arial; max-width: 400px; margin: 100px auto; padding: 20px; }
+        body { font-family: Arial; max-width: 400px; margin: 100px auto; padding: 20px; background-image: url("{{ url_for('static', filename='images/20251206_130258.jpg') }}");background-size: cover;background-position: center; }
         input { width: 100%; padding: 10px; margin: 10px 0; }
-        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
-        button:hover { background: #0056b3; }
+        button { width: 100%; padding: 10px; background-image: linear-gradient(to right,#CCCCFF,#FFC000 ); color: white; border: none; cursor: pointer; }
+        button:hover { background: #000000; }
+        #bn{ color:gold;font-size: 20px;}
+        #acc{color:mediumaquamarine;}
+        #reg{color:peru;}
+        h2{color:darkgoldenrod;}
         .flash { padding: 10px; background: #f8d7da; border: 1px solid #f5c6cb; margin: 10px 0; }
     </style>
 </head>
@@ -27,7 +31,7 @@
         <button type="submit">Login</button>
     </form>
     
-    <p>Don't have an account? <a href="/register">Register here</a></p>
-    <p><a href="/">Back to notices</a></p>
+    <p id="acc">Don't have an account? <a id="reg" href="/register">Register here</a></p>
+    <p><a href="/" id="bn">Back to notices</a></p>
 </body>
 </html>
