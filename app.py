@@ -7,19 +7,10 @@ import secrets
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
 
-
-
-
-
-
-
-
 for file in ['users.json', 'notices.json', 'conversations.json']:
     if not os.path.exists(file):
         with open(file, 'w') as f:
             json.dump({}, f)
-
-
 
 
 def load_json(filename):
